@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { WalletService } from './wallet.service';
 
 export interface Transaction {
   id: string;
@@ -14,6 +15,8 @@ export interface Transaction {
 export class TransactionsService {
   private transactions: Transaction[] = [];
 
+  constructor(private readonly walletService: WalletService) {}
+
   create(dto: CreateTransactionDto): Transaction {
     const tx: Transaction = {
       id: (this.transactions.length + 1).toString(),
@@ -25,6 +28,7 @@ export class TransactionsService {
     };
 
     this.transactions.push(tx);
+    this.walletService.addEarnings(tx.driverId, tx.amount);
     return tx;
   }
 
